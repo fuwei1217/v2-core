@@ -4,7 +4,9 @@ import './interfaces/IUniswapV2Factory.sol';
 import './UniswapV2Pair.sol';
 
 contract UniswapV2Factory is IUniswapV2Factory {
+    // feeTo is the address who will earns the 5 basis point fee if protocol fee is enabled
     address public feeTo;
+    // the address who can update feeTo address
     address public feeToSetter;
 
     mapping(address => mapping(address => address)) public getPair;
@@ -26,6 +28,9 @@ contract UniswapV2Factory is IUniswapV2Factory {
         require(token0 != address(0), 'UniswapV2: ZERO_ADDRESS');
         require(getPair[token0][token1] == address(0), 'UniswapV2: PAIR_EXISTS'); // single check is sufficient
         bytes memory bytecode = type(UniswapV2Pair).creationCode;
+
+        // create2 will create the address in a determined way, so it canbe calculated
+        // the salt combines both token address to make created contract address unique
         bytes32 salt = keccak256(abi.encodePacked(token0, token1));
         assembly {
             pair := create2(0, add(bytecode, 32), mload(bytecode), salt)

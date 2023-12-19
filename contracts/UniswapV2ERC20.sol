@@ -10,6 +10,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
     string public constant symbol = 'UNI-V2';
     uint8 public constant decimals = 18;
     uint  public totalSupply;
+    // balanceOf() function is automatically generated
     mapping(address => uint) public balanceOf;
     mapping(address => mapping(address => uint)) public allowance;
 
@@ -26,6 +27,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         assembly {
             chainId := chainid
         }
+        // use eip 712 for sturctured data hash and signature, how to calculate DOMAIN_SEPARATOR, PERMIT_TYPEHASH is defined in the doc
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
@@ -78,12 +80,15 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         return true;
     }
 
+    // allow delegation of approve after verifying the signature of owner 
     function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external {
         require(deadline >= block.timestamp, 'UniswapV2: EXPIRED');
+        // the digest encoding is defined in eip 712
         bytes32 digest = keccak256(
             abi.encodePacked(
                 '\x19\x01',
                 DOMAIN_SEPARATOR,
+                // function proto type hash, followed by parameters of the function
                 keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonces[owner]++, deadline))
             )
         );

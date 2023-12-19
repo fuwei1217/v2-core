@@ -4,6 +4,7 @@ interface IUniswapV2Pair {
     event Approval(address indexed owner, address indexed spender, uint value);
     event Transfer(address indexed from, address indexed to, uint value);
 
+    // erc20 related functions
     function name() external pure returns (string memory);
     function symbol() external pure returns (string memory);
     function decimals() external pure returns (uint8);
@@ -33,6 +34,7 @@ interface IUniswapV2Pair {
     );
     event Sync(uint112 reserve0, uint112 reserve1);
 
+    // pair related functions 
     function MINIMUM_LIQUIDITY() external pure returns (uint);
     function factory() external view returns (address);
     function token0() external view returns (address);
